@@ -151,6 +151,7 @@ object AgentSettings {
     // Name has the format of 'pid'@'host'
     val runtimeName = ManagementFactory.getRuntimeMXBean.getName.split('@')
     val newRelicConfig = config.getConfig("kamon.newrelic")
+    val hostName = if (newRelicConfig.hasPath("host-name")) newRelicConfig.getString("host-name") else runtimeName(1)
     val licenseKey = newRelicConfig.getString("license-key")
     assert(licenseKey != "<put-your-key-here>", "You forgot to include your New Relic license key in the configuration settings!")
     val ssl = newRelicConfig.getBoolean("ssl")
@@ -158,7 +159,7 @@ object AgentSettings {
     AgentSettings(
       licenseKey,
       newRelicConfig.getString("app-name"),
-      runtimeName(1),
+      hostName,
       runtimeName(0).toInt,
       Timeout(newRelicConfig.getFiniteDuration("operation-timeout")),
       newRelicConfig.getInt("max-connect-retries"),
